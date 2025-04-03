@@ -4,12 +4,21 @@ import { useState } from 'react';
 const NewQuestion = () => {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
+  const [language, setLanguage] = useState('');
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+
+  const languages = [
+    { value: '', label: 'Select a language' },
+    { value: 'jsx', label: 'React' },
+    { value: 'javascript', label: 'Javascript' },
+    { value: 'csharp', label: 'C#' },
+  ];
+
   const handleTagKeyDown = (e) => {
-    if (e.key === 'Enter' && tagInput.trim() && tags.length < 5) {
+    if (e.key === 'Enter' && tagInput.trim()) {
       e.preventDefault();
       setTags([...tags, tagInput.trim()]);
       setTagInput('');
@@ -22,12 +31,13 @@ const NewQuestion = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(false);
+    setIsSubmitting(true);
 
     try {
       const formData = new FormData();
       formData.append('title', title);
       formData.append('body', body);
+      formData.append('language', language);
 
       var stringedTags = ""
       tags.map((tag, idx) => {
@@ -147,6 +157,32 @@ const NewQuestion = () => {
                   <p className="mt-1 text-xs text-gray-500">Be specific and imagine you're asking a question to another person.</p>
                 </section>
 
+                {/* Language Section */}
+                <section>
+                  <div className="bg-blue-50 p-4 rounded-md border border-blue-200 mb-4">
+                    <h2 className="font-medium text-blue-800 mb-2">Programming Language</h2>
+                    <p className="text-sm text-blue-700">
+                      Select the primary programming language your question is about.
+                    </p>
+                  </div>
+
+                  <label htmlFor="language" className="block text-sm font-medium text-gray-700 mb-1">Language</label>
+                  <select
+                    id="language"
+                    value={language}
+                    onChange={(e) => setLanguage(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    required
+                  >
+                    {languages.map((lang) => (
+                      <option key={lang.value} value={lang.value}>
+                        {lang.label}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="mt-1 text-xs text-gray-500">Select the main programming language relevant to your question.</p>
+                </section>
+
                 {/* Body Section */}
                 <section>
                   <div className="bg-blue-50 p-4 rounded-md border border-blue-200 mb-4">
@@ -223,8 +259,8 @@ const NewQuestion = () => {
                       onChange={(e) => setTagInput(e.target.value)}
                       onKeyDown={handleTagKeyDown}
                       className="flex-1 min-w-[100px] py-1 outline-none"
-                      placeholder={tags.length < 5 ? "e.g. css, html, javascript (press Enter)" : "Maximum 5 tags reached"}
-                      disabled={tags.length >= 5}
+                      placeholder= "e.g. css, html, javascript (press Enter)"
+
                     />
                   </div>
                   <p className="mt-1 text-xs text-gray-500">Add tags to help others find your question.</p>
