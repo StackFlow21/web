@@ -8,7 +8,7 @@ const NewQuestion = () => {
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const [secretCode, setSecretCode] = useState('');
 
   const languages = [
     { value: '', label: 'Select a language' },
@@ -38,6 +38,7 @@ const NewQuestion = () => {
       formData.append('title', title);
       formData.append('body', body);
       formData.append('language', language);
+      formData.append('secret', String(secretCode));
 
       var stringedTags = ""
       tags.map((tag, idx) => {
@@ -50,25 +51,35 @@ const NewQuestion = () => {
       
       formData.append("tags", stringedTags);
 
+      // Log the form data for debugging
+      console.log('Submitting form data:', {
+        title,
+        body,
+        language,
+        secret: String(secretCode),
+        tags: stringedTags
+      });
+
       const response = await fetch('http://localhost:8000/felhasznalok/questions', {
         method: 'POST',
         body: formData,
       });
 
+      const responseData = await response.json();
+      
       if (response.ok) {
         window.location.href = '/';
       } else {
-        const errorData = await response.json();
-        console.error('Failed to submit question:', errorData.error);
+        console.error('Failed to submit question. Response:', responseData);
+        alert(`Failed to submit question: ${responseData.error || 'Unknown error'}`);
       }
     } catch (error) {
       console.error('Error submitting question:', error);
+      alert('An error occurred while submitting the question. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
-
-
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -223,6 +234,30 @@ const NewQuestion = () => {
                     ></textarea>
                   </div>
                   <p className="mt-1 text-xs text-gray-500">Include all the information someone would need to answer your question.</p>
+                </section>
+
+                {/* Secret Code Section */}
+                <section>
+                  <div className="bg-blue-50 p-4 rounded-md border border-blue-200 mb-4">
+                    <h2 className="font-medium text-blue-800 mb-2">Secret Code</h2>
+                    <p className="text-sm text-blue-700">
+                      Enter a secret code to make your question searchable.
+                    </p>
+                  </div>
+
+                  <label htmlFor="secretCode" className="block text-sm font-medium text-gray-700 mb-1">Secret Code</label>
+                  <input
+                    type="text"
+                    id="secretCode"
+                    value={secretCode}
+                    onChange={(e) => setSecretCode(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    placeholder="Enter a secret code"
+                    required
+                  />
+                  <p className="mt-1 text-xs text-gray-500">
+                    This code will be used to find your question later. Make sure to remember it!
+                  </p>
                 </section>
 
                 {/* Tags Section */}

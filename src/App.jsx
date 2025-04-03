@@ -10,11 +10,12 @@ function App() {
     <>
       <Router>
         <Routes>
-          <Route path="/" element={<StackOverflowClone />} />
+          <Route path="/" element={<Navigate to="/questions" replace />} />
+          <Route path="/questions" element={<StackOverflowClone />} />
           <Route path="/felhasznalok/login" element={<Login />} />
           <Route path="/felhasznalok/regisztracio" element={<Register />} />
           <Route path="/questions/ask" element={<NewQuestion />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/questions" replace />} />
         </Routes>
       </Router>
     </>
